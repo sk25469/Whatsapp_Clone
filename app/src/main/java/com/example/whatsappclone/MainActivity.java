@@ -18,6 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
         mPhoneNumber = findViewById(R.id.phoneNumber);
         mVerificationCode = findViewById(R.id.verificationCode);
-        //mVerifyCodeBtn = findViewById(R.id.sendVerifyCodeBtn);
+        mVerifyCodeBtn = findViewById(R.id.sendVerifyCodeBtn);
     }
 }
