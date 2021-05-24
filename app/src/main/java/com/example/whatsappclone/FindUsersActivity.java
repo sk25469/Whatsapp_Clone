@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 
 import com.example.whatsappclone.Adapters.UserListAdapter;
 import com.example.whatsappclone.Models.UserModel;
@@ -27,6 +29,31 @@ public class FindUsersActivity extends AppCompatActivity {
         userList = new ArrayList<>();
 
         initializeRecyclerView();
+        getContactList();
+    }
+
+    private void getContactList(){
+        Cursor phones = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+        /** this cursor will go through all the contacts **/
+
+        while(phones.moveToNext()){
+            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+
+            String phone = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+            UserModel mContact = new UserModel(name, phone);
+
+            userList.add(mContact);
+
+            /** as something changed we need to tell the adapter to display the changed data **/
+            mUserListAdapter.notifyDataSetChanged();
+
+        }
     }
 
     private void initializeRecyclerView() {
