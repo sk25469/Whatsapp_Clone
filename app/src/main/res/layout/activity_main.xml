@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_margin="5dp"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
     <EditText
         android:layout_width="wrap_content"

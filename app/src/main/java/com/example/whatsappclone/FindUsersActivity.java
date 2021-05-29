@@ -19,14 +19,14 @@ public class FindUsersActivity extends AppCompatActivity {
     private RecyclerView.Adapter mUserListAdapter;
     private RecyclerView.LayoutManager mUserListLayoutManager;
 
-    ArrayList<UserModel> userList;
+    ArrayList<UserModel> userList, contactList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_users);
 
-        userList = new ArrayList<>();
+        contactList= new ArrayList<>();
 
         initializeRecyclerView();
         getContactList();

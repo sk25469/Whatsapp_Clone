@@ -20,6 +20,8 @@ public class MainPageActivity extends AppCompatActivity {
 
         Button logoutBtn = findViewById(R.id.logoutBtn);
         Button findUserBtn = findViewById(R.id.findUsersBtn);
+
+
         findUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -33,7 +35,7 @@ public class MainPageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
                 /** when user is signed out, he goes to the {@ MainActivity} */
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); /** so that the user doesn't have access to
                  anything of this current activity **/
                 startActivity(intent);
