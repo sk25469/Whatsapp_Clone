@@ -15,4 +15,8 @@ public class UserModel {
     public String getPhone() {
         return phone;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -1,9 +1,12 @@
 package com.example.whatsappclone;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FindUsersActivity extends AppCompatActivity {
 
@@ -95,12 +99,18 @@ public class FindUsersActivity extends AppCompatActivity {
                     for(DataSnapshot childSnapshot : snapshot.getChildren()){
 
                         if(childSnapshot.child("phone").getValue() != null)
-                            phone = childSnapshot.child("phone").getValue().toString();
+                            phone = Objects.requireNonNull(childSnapshot.child("phone").getValue()).toString();
 
                         if(childSnapshot.child("name").getValue() != null)
-                            name = childSnapshot.child("name").getValue().toString();
+                            name = Objects.requireNonNull(childSnapshot.child("name").getValue()).toString();
 
                         UserModel mUser = new UserModel(name,phone);
+                        if(name.equals(phone)){
+                            for(UserModel mContactIterator : contactList){
+                                if(mContactIterator.getPhone().equals(mUser.getPhone()))
+                                    mUser.setName(mContactIterator.getName());
+                            }
+                        }
                         userList.add(mUser);
                         mUserListAdapter.notifyDataSetChanged();
 
@@ -117,14 +127,18 @@ public class FindUsersActivity extends AppCompatActivity {
     }
 
     private String getCountryISO() {
-        String iso = null;
-        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(getApplicationContext().TELEPHONY_SERVICE);
-        if (telephonyManager.getNetworkCountryIso() != null)
-            if (telephonyManager.getNetworkCountryIso().equals(""))
-                iso = telephonyManager.getNetworkCountryIso();
-
-
-        return CountryToPhonePrefix.getPhone(iso);
+//        String iso = null;
+//        getApplicationContext();
+//        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
+//        if (telephonyManager.getNetworkCountryIso() != null)
+//            if (telephonyManager.getNetworkCountryIso().equals(""))
+//                iso = telephonyManager.getNetworkCountryIso();
+//
+//
+//        assert iso != null;
+//        return CountryToPhonePrefix.getPhone(iso);
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        return tm.getSimCountryIso();
     }
 
     private void initializeRecyclerView() {
