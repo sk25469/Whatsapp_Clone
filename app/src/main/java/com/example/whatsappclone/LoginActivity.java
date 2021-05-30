@@ -1,15 +1,13 @@
 package com.example.whatsappclone;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,10 +35,10 @@ import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "LoginActivity";
 
-    private EditText mPhoneNumber, mVerificationCode;
-    private Button mVerifyCodeBtn;
+    private EditText mPhoneNumber, mCode;
+    private Button mSend;
     private FirebaseAuth mAuth;
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
@@ -58,25 +55,22 @@ public class LoginActivity extends AppCompatActivity {
         userIsLoggedIn();
 
         mPhoneNumber = findViewById(R.id.phoneNumber);
-        mVerificationCode = findViewById(R.id.verificationCode);
+        mCode = findViewById(R.id.verificationCode);
 
-        mVerifyCodeBtn = findViewById(R.id.sendVerifyCodeBtn);
+        mSend = findViewById(R.id.sendVerifyCodeBtn);
 
-        mVerifyCodeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVerificationId != null) {
-                    verifyPhoneNumberWithCode();
-                } else
-                    startPhoneNumberVerification();
-            }
+        mSend.setOnClickListener(v -> {
+            if (mVerificationId != null) {
+                verifyPhoneNumberWithCode();
+            } else
+                startPhoneNumberVerification();
         });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull @org.jetbrains.annotations.NotNull PhoneAuthCredential phoneAuthCredential) {
                 Log.d(TAG, "onVerificationCompleted:" + phoneAuthCredential);
-                signInWithPhoneCredentials(phoneAuthCredential);
+                signInWithPhoneAuthCredential(phoneAuthCredential);
             }
 
             @Override
@@ -99,51 +93,45 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "onCodeSent:" + code);
 
                 mVerificationId = code;
-                mVerifyCodeBtn.setText("Verify Code");
+                mSend.setText("Verify Code");
             }
         };
     }
 
     private void verifyPhoneNumberWithCode() {
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, mVerificationCode.getText().toString());
-        signInWithPhoneCredentials(credential);
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, mCode.getText().toString());
+        signInWithPhoneAuthCredential(credential);
     }
 
-    private void signInWithPhoneCredentials(PhoneAuthCredential phoneAuthCredential) {
-        FirebaseAuth.getInstance().signInWithCredential(phoneAuthCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "signInWithCredential:success");
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if (user != null) {
-                        /** this database points to the structure of the realtime database of the firebase **/
-                        final DatabaseReference mUserDB = FirebaseDatabase.getInstance().getReference().child("user").child(user.getUid());
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential) {
+        FirebaseAuth.getInstance().signInWithCredential(phoneAuthCredential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
 
-                        /** for single event listener */
-                        mUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) { /** data snapshot contains all the data inside database */
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                                if (!snapshot.exists()) {
-                                    Map<String, Object> userMap = new HashMap<>();
-                                    userMap.put("phone", user.getPhoneNumber());
-                                    userMap.put("name", user.getDisplayName());
-
-                                    mUserDB.updateChildren(userMap); /** if the snapshot doesn't exist, this inserts into the database */
-
-                                }
+                if (user != null) {
+                    final DatabaseReference mUserDB = FirebaseDatabase.getInstance().getReference().child("user").child(user.getUid());
+                    mUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.exists()) {
+                                Map<String, Object> userMap = new HashMap<>();
+                                userMap.put("phone", user.getPhoneNumber());
+                                userMap.put("name", user.getPhoneNumber());
+                                mUserDB.updateChildren(userMap);
                             }
+                            userIsLoggedIn();
+                        }
 
-                            @Override
-                            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                            }
-                        });
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                        }
+                    });
                 }
-                //userIsLoggedIn();
+
             }
+
         });
     }
 

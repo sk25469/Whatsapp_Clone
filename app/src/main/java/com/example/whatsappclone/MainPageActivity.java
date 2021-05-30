@@ -22,27 +22,19 @@ public class MainPageActivity extends AppCompatActivity {
         Button findUserBtn = findViewById(R.id.findUsersBtn);
 
 
-        findUserBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), FindUsersActivity.class));
-            }
-        });
+        findUserBtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), FindUsersActivity.class)));
 
 
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                /** when user is signed out, he goes to the {@ MainActivity} */
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); /** so that the user doesn't have access to
-                 anything of this current activity **/
-                startActivity(intent);
+        logoutBtn.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            /** when user is signed out, he goes to the {@ MainActivity} */
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); /** so that the user doesn't have access to
+             anything of this current activity **/
+            startActivity(intent);
 
-                finish();
-                return;
-            }
+            finish();
+            return;
         });
 
         getPermissions();
