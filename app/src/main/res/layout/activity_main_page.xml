@@ -22,4 +22,9 @@
         android:text="Find Users"
         android:id="@+id/findUsersBtn"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatList" />
+
 </LinearLayout>

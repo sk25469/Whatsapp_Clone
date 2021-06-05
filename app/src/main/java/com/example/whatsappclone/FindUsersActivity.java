@@ -72,7 +72,7 @@ public class FindUsersActivity extends AppCompatActivity {
             if(!String.valueOf(phone.charAt(0)).equals("+"))
                 phone = ISOPrefix + phone;
 
-            UserModel mContact = new UserModel(name, phone);
+            UserModel mContact = new UserModel("", name, phone);
 
             contactList.add(mContact);
 
@@ -104,7 +104,7 @@ public class FindUsersActivity extends AppCompatActivity {
                         if(childSnapshot.child("name").getValue() != null)
                             name = Objects.requireNonNull(childSnapshot.child("name").getValue()).toString();
 
-                        UserModel mUser = new UserModel(name,phone);
+                        UserModel mUser = new UserModel(childSnapshot.getKey(), name,phone);
                         if(name.equals(phone)){
                             for(UserModel mContactIterator : contactList){
                                 if(mContactIterator.getPhone().equals(mUser.getPhone()))
@@ -127,18 +127,18 @@ public class FindUsersActivity extends AppCompatActivity {
     }
 
     private String getCountryISO() {
-//        String iso = null;
-//        getApplicationContext();
-//        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
-//        if (telephonyManager.getNetworkCountryIso() != null)
-//            if (telephonyManager.getNetworkCountryIso().equals(""))
-//                iso = telephonyManager.getNetworkCountryIso();
-//
-//
-//        assert iso != null;
-//        return CountryToPhonePrefix.getPhone(iso);
-        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        return tm.getSimCountryIso();
+        String iso = null;
+        getApplicationContext();
+        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
+        if (telephonyManager.getNetworkCountryIso() != null)
+            if (telephonyManager.getNetworkCountryIso().equals(""))
+                iso = telephonyManager.getNetworkCountryIso();
+
+
+        assert iso != null;
+        return CountryToPhonePrefix.getPhone(iso);
+//        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+//        return tm.getSimCountryIso();
     }
 
     private void initializeRecyclerView() {
