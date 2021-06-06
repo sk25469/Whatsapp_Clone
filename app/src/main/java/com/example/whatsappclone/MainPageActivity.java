@@ -94,11 +94,13 @@ public class MainPageActivity extends AppCompatActivity {
 
 
     private void initializeRecyclerView() {
+
         chatList = new ArrayList<>();
 
         mChatList = findViewById(R.id.chatList);
 
         mChatList.setNestedScrollingEnabled(false); /* to make a seamless scrolling **/
+
         mChatList.setHasFixedSize(false);
 
         mChatListLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
@@ -111,7 +113,7 @@ public class MainPageActivity extends AppCompatActivity {
     }
 
     private void getPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { /** this permission is asked only if the android version > Marshmellow **/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { /** this permission is asked only if the android version > Marshmallow **/
             requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS}, 1);
         }
     }

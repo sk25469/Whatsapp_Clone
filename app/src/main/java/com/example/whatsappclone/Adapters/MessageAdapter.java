@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,17 +15,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatListViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    ArrayList<ChatModel> ChatList;
+    ArrayList<ChatModel> messageList;
 
-    public ChatListAdapter(ArrayList<ChatModel> ChatList) {
-        this.ChatList = ChatList;
+    public MessageAdapter(ArrayList<ChatModel> messageList) {
+        this.messageList = messageList;
     }
 
     @NotNull
     @Override
-    public ChatListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         /** it will inflate the view to recyclerView  **/
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, null, false);
@@ -34,37 +33,26 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatLi
                 , ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp); // to attach the above params
 
-        ChatListViewHolder rcv = new ChatListViewHolder(layoutView);
+        MessageViewHolder rcv = new MessageViewHolder(layoutView);
 
         return rcv;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull ChatListAdapter.ChatListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull MessageAdapter.MessageViewHolder holder, int position) {
 
-        holder.mTitle.setText(ChatList.get(position).getChatId());
-
-        holder.mLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
     }
 
     @Override
     public int getItemCount() {
-        return ChatList.size();
+        return messageList.size();
     }
 
-    public class ChatListViewHolder extends RecyclerView.ViewHolder {
-        public TextView mTitle;
+    public class MessageViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mLayout;
 
-        public ChatListViewHolder(View view) {
+        public MessageViewHolder(View view) {
             super(view);
-
-            mTitle = view.findViewById(R.id.title);
 
             mLayout = view.findViewById(R.id.layout);
         }
