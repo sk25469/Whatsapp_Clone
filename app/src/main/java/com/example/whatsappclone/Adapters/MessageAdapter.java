@@ -4,11 +4,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.whatsappclone.Models.ChatModel;
+import com.example.whatsappclone.Models.MessageModel;
 import com.example.whatsappclone.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,9 +18,9 @@ import java.util.ArrayList;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    ArrayList<ChatModel> messageList;
+    ArrayList<MessageModel> messageList;
 
-    public MessageAdapter(ArrayList<ChatModel> messageList) {
+    public MessageAdapter(ArrayList<MessageModel> messageList) {
         this.messageList = messageList;
     }
 
@@ -28,7 +29,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         /** it will inflate the view to recyclerView  **/
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, null, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp); // to attach the above params
@@ -40,6 +41,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull MessageAdapter.MessageViewHolder holder, int position) {
+        holder.mMessage.setText(messageList.get(position).getMessage());
+        holder.mSender.setText(messageList.get(position).getSenderId());
+
 
     }
 
@@ -48,13 +52,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         return messageList.size();
     }
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout mLayout;
+    class MessageViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout mLayout;
+        TextView mMessage, mSender;
 
-        public MessageViewHolder(View view) {
+        MessageViewHolder(View view) {
             super(view);
 
             mLayout = view.findViewById(R.id.layout);
+            mMessage = view.findViewById(R.id.message);
+            mSender = view.findViewById(R.id.sender);
         }
     }
 }

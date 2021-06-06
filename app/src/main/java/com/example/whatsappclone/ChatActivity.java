@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsappclone.Adapters.MessageAdapter;
 import com.example.whatsappclone.Models.ChatModel;
+import com.example.whatsappclone.Models.MessageModel;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView.Adapter mChatAdapter;
     private RecyclerView.LayoutManager mChatLayoutManager;
 
-    ArrayList<ChatModel> messageList;
+    ArrayList<MessageModel> messageList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
