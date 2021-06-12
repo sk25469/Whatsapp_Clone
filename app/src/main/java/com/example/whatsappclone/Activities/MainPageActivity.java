@@ -1,4 +1,4 @@
-package com.example.whatsappclone;
+package com.example.whatsappclone.Activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsappclone.Adapters.ChatListAdapter;
 import com.example.whatsappclone.Models.ChatModel;
+import com.example.whatsappclone.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

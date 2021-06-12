@@ -1,5 +1,7 @@
 package com.example.whatsappclone.Adapters;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.whatsappclone.Activities.ChatActivity;
 import com.example.whatsappclone.Models.ChatModel;
 import com.example.whatsappclone.R;
 
@@ -18,10 +21,10 @@ import java.util.ArrayList;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatListViewHolder> {
 
-    ArrayList<ChatModel> ChatList;
+    ArrayList<ChatModel> chatList;
 
-    public ChatListAdapter(ArrayList<ChatModel> ChatList) {
-        this.ChatList = ChatList;
+    public ChatListAdapter(ArrayList<ChatModel> chatList) {
+        this.chatList = chatList;
     }
 
     @NotNull
@@ -40,13 +43,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull ChatListAdapter.ChatListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ChatListAdapter.ChatListViewHolder holder, int position) {
 
-        holder.mTitle.setText(ChatList.get(position).getChatId());
+        holder.mTitle.setText(chatList.get(position).getChatId());
 
         holder.mLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ChatActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("chatID", chatList.get(holder.getAdapterPosition()).getChatId());
+                intent.putExtras(bundle);
+                v.getContext().startActivity(intent);
 
             }
         });
@@ -54,7 +62,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatLi
 
     @Override
     public int getItemCount() {
-        return ChatList.size();
+        return chatList.size();
     }
 
     public class ChatListViewHolder extends RecyclerView.ViewHolder {

@@ -11,7 +11,7 @@ public class CountryToPhonePrefix {
     public static Map<String, String> getAll(){
         return country2phone;
     }
-    private static Map<String, String> country2phone = new HashMap<String, String>();
+    private static final Map<String, String> country2phone = new HashMap<>();
     static {
         country2phone.put("AF", "+93");
         country2phone.put("AL", "+355");
