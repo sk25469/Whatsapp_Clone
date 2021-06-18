@@ -8,9 +8,11 @@ public class CountryToPhonePrefix {
     public static String getPhone(String code) {
         return country2phone.get(code.toUpperCase());
     }
+
     public static Map<String, String> getAll(){
         return country2phone;
     }
+
     private static final Map<String, String> country2phone = new HashMap<>();
     static {
         country2phone.put("AF", "+93");
