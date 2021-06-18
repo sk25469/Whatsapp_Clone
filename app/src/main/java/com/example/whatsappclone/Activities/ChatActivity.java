@@ -1,5 +1,6 @@
 package com.example.whatsappclone.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -48,11 +49,16 @@ public class ChatActivity extends AppCompatActivity {
         mChatDb = FirebaseDatabase.getInstance().getReference().child("chat").child(chatID);
 
         Button mSend = findViewById(R.id.send);
+        Button mAddMedia = findViewById(R.id.addMedia);
+
         mSend.setOnClickListener(v -> sendMessage());
+
+        mAddMedia.setOnClickListener(v -> openGallery());
 
         initializeRecyclerView();
         getMessages();
     }
+
 
     private void getMessages() {
         mChatDb.addChildEventListener(new ChildEventListener() {
@@ -130,5 +136,30 @@ public class ChatActivity extends AppCompatActivity {
         mChatAdapter = new MessageAdapter(messageList);
 
         mChat.setAdapter(mChatAdapter);
+    }
+
+    int PICK_IMAGE_INTENT = 1;
+    ArrayList<String> mediaUriList = new ArrayList<>();
+    private void openGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*"); // to pick images, to pick audio - audio/*
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); // this will enable user to select multiple images
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Pictures"), PICK_IMAGE_INTENT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(data.getClipData() == null)
+                mediaUriList.add(data.getDataString());
+            else{
+                for(int i = 0; i < data.getClipData().getItemCount(); i++){
+                    mediaUriList.add(data.getClipData().getItemAt(i).getUri().toString());
+                }
+            }
+
+        }
     }
 }
