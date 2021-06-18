@@ -48,12 +48,7 @@ public class ChatActivity extends AppCompatActivity {
         mChatDb = FirebaseDatabase.getInstance().getReference().child("chat").child(chatID);
 
         Button mSend = findViewById(R.id.send);
-        mSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
+        mSend.setOnClickListener(v -> sendMessage());
 
         initializeRecyclerView();
         getMessages();
