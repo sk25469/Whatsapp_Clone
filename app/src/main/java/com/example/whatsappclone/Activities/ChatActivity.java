@@ -2,7 +2,6 @@ package com.example.whatsappclone.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsappclone.Adapters.MessageAdapter;
-import com.example.whatsappclone.Models.ChatModel;
 import com.example.whatsappclone.Models.MessageModel;
 import com.example.whatsappclone.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -152,10 +150,14 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            if(data.getClipData() == null)
+            /* if user selects more than 1 image then we cant store the array of all info in data intent,
+            hence we check if there is more than one image selected, if not then we store all the image data
+            in the array list
+             */
+            if (data.getClipData() == null)
                 mediaUriList.add(data.getDataString());
-            else{
-                for(int i = 0; i < data.getClipData().getItemCount(); i++){
+            else {
+                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
                     mediaUriList.add(data.getClipData().getItemAt(i).getUri().toString());
                 }
             }
