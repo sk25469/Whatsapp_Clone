@@ -33,7 +33,8 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
     public UserListViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         /* it will inflate the view to recyclerView  **/
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, null, false);
-        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp); /* to attach the above params **/
 
         UserListViewHolder rcv = new UserListViewHolder(layoutView);

@@ -1,6 +1,7 @@
 package com.example.whatsappclone.Activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,12 +16,16 @@ import com.example.whatsappclone.Adapters.MediaAdapter;
 import com.example.whatsappclone.Adapters.MessageAdapter;
 import com.example.whatsappclone.Models.MessageModel;
 import com.example.whatsappclone.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -65,19 +70,19 @@ public class ChatActivity extends AppCompatActivity {
             // onChildAdded is used because is checks all the child under the parent as soon as a new child is added
             @Override
             public void onChildAdded(@NonNull @NotNull DataSnapshot snapshot, @Nullable @org.jetbrains.annotations.Nullable String previousChildName) {
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     String text = "",
                             creatorID = "";
 
-                    if(snapshot.child("text").getValue() != null)
+                    if (snapshot.child("text").getValue() != null)
                         text = snapshot.child("text").getValue().toString();
 
-                    if(snapshot.child("creator").getValue() != null)
+                    if (snapshot.child("creator").getValue() != null)
                         creatorID = snapshot.child("creator").getValue().toString();
 
                     MessageModel mMessage = new MessageModel(snapshot.getKey(), creatorID, text);
                     messageList.add(mMessage);
-                    mChatLayoutManager.scrollToPosition(messageList.size()-1); // this will scroll to the latest message
+                    mChatLayoutManager.scrollToPosition(messageList.size() - 1); // this will scroll to the latest message
                     mChatAdapter.notifyDataSetChanged();
                 }
             }
@@ -104,19 +109,65 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(){
-        EditText mMessage = findViewById(R.id.message);
+    int totalMediaUploaded = 0; // iterator for traversing the mediaIdlist
+    ArrayList<String> mediaIdList = new ArrayList<>();
+    EditText mMessage;
 
-        if(!mMessage.getText().toString().isEmpty()){
-            DatabaseReference newMessageDb = mChatDb.push();
-            Map newMessageMap = new HashMap();
+    private void sendMessage() {
+        mMessage = findViewById(R.id.message);
+
+        String messageId = mChatDb.push().getKey();
+        DatabaseReference newMessageDb = mChatDb.child(messageId);
+
+        final Map newMessageMap = new HashMap();
+        newMessageMap.put("creator", FirebaseAuth.getInstance().getUid());
+
+        if (!mMessage.getText().toString().isEmpty())
             newMessageMap.put("text", mMessage.getText().toString());
-            newMessageMap.put("creator", FirebaseAuth.getInstance().getUid());
 
-            newMessageDb.updateChildren(newMessageMap);
+        //newMessageDb.updateChildren(newMessageMap);
+
+        if (!mediaUriList.isEmpty()) {
+            for (String mediaUri : mediaUriList) {
+                String mediaId = newMessageDb.child("media").getKey();
+                mediaIdList.add(mediaId);
+                final StorageReference filePath = FirebaseStorage.getInstance().getReference().
+                        child("chat").child(chatID).child(messageId).child(mediaId);
+
+                UploadTask uploadTask = filePath.putFile(Uri.parse(mediaUri));
+
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                newMessageMap.put("/media/" + mediaIdList.get(totalMediaUploaded) + "/", uri.toString());
+                                totalMediaUploaded++;
+
+                                if (totalMediaUploaded == mediaUriList.size())
+                                    updateDatabaseWithNewMessage(newMessageDb, newMessageMap);
+
+                            }
+                        });
+                    }
+                });
+
+            }
+        } else {
+            if (!mMessage.getText().toString().isEmpty())
+                updateDatabaseWithNewMessage(newMessageDb, newMessageMap);
         }
 
+
+    }
+
+    private void updateDatabaseWithNewMessage(DatabaseReference newMessageDb, Map newMessageMap) {
+        newMessageDb.updateChildren(newMessageMap);
         mMessage.setText(null);
+        mediaUriList.clear();
+        mediaIdList.clear();
+        mMediaAdapter.notifyDataSetChanged();
     }
 
     int PICK_IMAGE_INTENT = 1;
@@ -151,7 +202,8 @@ public class ChatActivity extends AppCompatActivity {
 
         mMedia.setHasFixedSize(false);
 
-        mMediaLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        mMediaLayoutManager = new LinearLayoutManager(getApplicationContext(),
+                LinearLayoutManager.HORIZONTAL, false);
 
         mMedia.setLayoutManager(mMediaLayoutManager);
 
@@ -171,7 +223,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
             /* if user selects more than 1 image then we cant store the array of all info in data intent,
             hence we check if there is more than one image selected, if not then we store all the image data
             in the array list
