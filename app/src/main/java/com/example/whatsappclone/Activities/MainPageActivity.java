@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsappclone.Adapters.ChatListAdapter;
 import com.example.whatsappclone.Models.ChatModel;
 import com.example.whatsappclone.R;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +38,7 @@ public class MainPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+        Fresco.initialize(this);
 
         Button logoutBtn = findViewById(R.id.logoutBtn);
         Button findUserBtn = findViewById(R.id.findUsersBtn);
