@@ -74,13 +74,19 @@ public class ChatActivity extends AppCompatActivity {
                     String text = "",
                             creatorID = "";
 
+                    ArrayList<String> mediaUrlList = new ArrayList<>();
+
                     if (snapshot.child("text").getValue() != null)
                         text = snapshot.child("text").getValue().toString();
 
                     if (snapshot.child("creator").getValue() != null)
                         creatorID = snapshot.child("creator").getValue().toString();
 
-                    MessageModel mMessage = new MessageModel(snapshot.getKey(), creatorID, text);
+                    if (snapshot.child("media").getChildrenCount() > 0)
+                        for (DataSnapshot mediaSnapshot : snapshot.child("media").getChildren())
+                            mediaUrlList.add(mediaSnapshot.getValue().toString());
+
+                    MessageModel mMessage = new MessageModel(snapshot.getKey(), creatorID, text, mediaUrlList);
                     messageList.add(mMessage);
                     mChatLayoutManager.scrollToPosition(messageList.size() - 1); // this will scroll to the latest message
                     mChatAdapter.notifyDataSetChanged();

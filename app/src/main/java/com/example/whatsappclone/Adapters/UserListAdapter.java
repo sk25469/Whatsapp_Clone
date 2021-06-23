@@ -17,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserListViewHolder> {
 
@@ -48,23 +47,20 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
         holder.mUserName.setText(userList.get(position).getName());
 
         holder.mPhoneNumber.setText(userList.get(position).getPhone());
-        holder.mLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String key = FirebaseDatabase.getInstance().getReference().child("chat").push().getKey();
-                assert key != null;
-                FirebaseDatabase.getInstance().getReference().
-                        child("user").
-                        child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).
-                        child("chat").
-                        child(key).setValue(true); // this is for the person who is sending the message
+        holder.mLayout.setOnClickListener(v -> {
+            String key = FirebaseDatabase.getInstance().getReference().child("chat").push().getKey();
+            assert key != null;
+            FirebaseDatabase.getInstance().getReference().
+                    child("user").
+                    child(FirebaseAuth.getInstance().getUid()).
+                    child("chat").
+                    child(key).setValue(true); // this is for the person who is sending the message
 
-                FirebaseDatabase.getInstance().getReference().
-                        child("user").
-                        child(userList.get(position).getUid()).
-                        child("chat").
-                        child(key).setValue(true); // for the person whom we are sending the message from our contacts list
-            }
+            FirebaseDatabase.getInstance().getReference().
+                    child("user").
+                    child(userList.get(position).getUid()).
+                    child("chat").
+                    child(key).setValue(true); // for the person whom we are sending the message from our contacts list
         });
     }
 

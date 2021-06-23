@@ -1,12 +1,8 @@
 package com.example.whatsappclone.Activities;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsappclone.Adapters.UserListAdapter;
 import com.example.whatsappclone.Models.UserModel;
 import com.example.whatsappclone.R;
-import com.example.whatsappclone.Utils.CountryToPhonePrefix;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -128,18 +123,19 @@ public class FindUsersActivity extends AppCompatActivity {
     }
 
     private String getCountryISO() {
-        String iso = null;
-        getApplicationContext();
-        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
-        if (telephonyManager.getNetworkCountryIso() != null)
-            if (telephonyManager.getNetworkCountryIso().equals(""))
-                iso = telephonyManager.getNetworkCountryIso();
-
-
-        //assert iso != null;
-        return CountryToPhonePrefix.getPhone(iso);
-//        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-//        return tm.getSimCountryIso();
+        String iso = "+91";
+//        getApplicationContext();
+//        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
+//        if (telephonyManager.getNetworkCountryIso() != null)
+//            if (telephonyManager.getNetworkCountryIso().equals(""))
+//                iso = telephonyManager.getNetworkCountryIso();
+//
+//
+//        //assert iso != null;
+//        return CountryToPhonePrefix.getPhone(iso);
+////        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+////        return tm.getSimCountryIso();
+        return iso;
     }
 
     private void initializeRecyclerView() {

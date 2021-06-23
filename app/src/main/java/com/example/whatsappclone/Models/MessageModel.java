@@ -1,12 +1,16 @@
 package com.example.whatsappclone.Models;
 
+import java.util.ArrayList;
+
 public class MessageModel {
     String messageId, senderId, message;
+    ArrayList<String> mediaUrlList;
 
-    public MessageModel(String messageId, String senderId, String message){
+    public MessageModel(String messageId, String senderId, String message, ArrayList<String> mediaUrlList) {
         this.messageId = messageId;
         this.senderId = senderId;
         this.message = message;
+        this.mediaUrlList = mediaUrlList;
     }
 
     public String getMessageId() {
@@ -19,5 +23,9 @@ public class MessageModel {
 
     public String getMessage() {
         return message;
+    }
+
+    public ArrayList<String> getMediaUrlList() {
+        return mediaUrlList;
     }
 }
