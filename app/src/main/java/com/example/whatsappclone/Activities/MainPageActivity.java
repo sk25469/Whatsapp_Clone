@@ -38,6 +38,7 @@ public class MainPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+
         Fresco.initialize(this);
 
         Button logoutBtn = findViewById(R.id.logoutBtn);

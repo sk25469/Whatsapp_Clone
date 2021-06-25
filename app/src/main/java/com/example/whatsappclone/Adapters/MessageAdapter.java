@@ -65,6 +65,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
     static class MessageViewHolder extends RecyclerView.ViewHolder {
+
         LinearLayout mLayout;
         TextView mMessage, mSender;
 
