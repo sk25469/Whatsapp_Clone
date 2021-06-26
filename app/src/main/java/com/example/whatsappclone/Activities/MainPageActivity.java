@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OSDeviceState;
+import com.onesignal.OSNotificationReceivedEvent;
 import com.onesignal.OneSignal;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +34,7 @@ public class MainPageActivity extends AppCompatActivity {
     private RecyclerView mChatList;
     private RecyclerView.Adapter mChatListAdapter;
     private RecyclerView.LayoutManager mChatListLayoutManager;
+
 
     private static final String ONESIGNAL_APP_ID = "fed48090-0393-48db-bcdd-e40ad965f7bc";
 
@@ -50,6 +53,32 @@ public class MainPageActivity extends AppCompatActivity {
         OneSignal.initWithContext(this);
         OneSignal.setAppId(ONESIGNAL_APP_ID);
 
+        OSDeviceState device = OneSignal.getDeviceState();
+
+        String notificationEmail;
+
+        {
+            assert device != null;
+            notificationEmail = device.getEmailAddress();
+        }
+
+        String notificationEmailId = device.getEmailUserId();
+        String notificationPushToken = device.getPushToken();
+        String notificationUserId = device.getUserId();
+
+        boolean notificationEnabled = device.areNotificationsEnabled();
+        boolean notificationSubscribed = device.isSubscribed();
+        boolean notificationPushDisabled = device.isPushDisabled();
+
+
+        OneSignal.setNotificationWillShowInForegroundHandler(new OneSignal.OSNotificationWillShowInForegroundHandler() {
+            @Override
+            public void notificationWillShowInForeground(OSNotificationReceivedEvent notificationReceivedEvent) {
+                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid())
+                        .child("notificationKey").setValue(notificationUserId);
+            }
+        });
+
         Fresco.initialize(this);
 
         Button logoutBtn = findViewById(R.id.logoutBtn);
@@ -60,6 +89,8 @@ public class MainPageActivity extends AppCompatActivity {
 
 
         logoutBtn.setOnClickListener(v -> {
+
+            OneSignal.disablePush(true); // disables the one signal to push notification after we log out
             FirebaseAuth.getInstance().signOut();
             /** when user is signed out, he goes to the {@ MainActivity} */
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
