@@ -1,4 +1,7 @@
+
+
 plugins {
+    id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
     id 'com.android.application'
     id 'com.google.gms.google-services'
 }
@@ -14,6 +17,11 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [
+                onesignal_app_id: 'fed48090-0393-48db-bcdd-e40ad965f7bc',
+                // Project number pulled from dashboard, local value is ignored.
+                onesignal_google_project_number: 'REMOTE'
+        ]
     }
 
     buildTypes {
@@ -43,10 +51,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.firebase:firebase-database:20.0.0'
     implementation 'com.google.firebase:firebase-storage:20.0.0'
-    implementation 'com.onesignal:OneSignal:3.8.3'
+    implementation 'com.onesignal:OneSignal:4.4.0'
 
     implementation 'com.facebook.fresco:fresco:2.5.0'
     implementation 'com.github.stfalcon:frescoimageviewer:0.5.0'
+
+    implementation 'com.onesignal:OneSignal:4.4.0'
 
 
 
