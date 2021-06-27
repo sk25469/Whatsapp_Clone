@@ -34,10 +34,7 @@ import java.util.Objects;
 
 public class MainPageActivity extends AppCompatActivity implements OSSubscriptionObserver {
 
-    private RecyclerView mChatList;
     private RecyclerView.Adapter mChatListAdapter;
-    private RecyclerView.LayoutManager mChatListLayoutManager;
-
 
     private static final String ONESIGNAL_APP_ID = "fed48090-0393-48db-bcdd-e40ad965f7bc";
 
@@ -138,13 +135,13 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
 
         chatList = new ArrayList<>();
 
-        mChatList = findViewById(R.id.chatList);
+        RecyclerView mChatList = findViewById(R.id.chatList);
 
         mChatList.setNestedScrollingEnabled(false); /* to make a seamless scrolling **/
 
         mChatList.setHasFixedSize(false);
 
-        mChatListLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        RecyclerView.LayoutManager mChatListLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
 
         mChatList.setLayoutManager(mChatListLayoutManager);
 
