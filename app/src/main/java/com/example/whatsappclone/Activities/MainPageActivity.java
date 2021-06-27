@@ -87,6 +87,7 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
         getUserChatList();
     }
 
+    // This method occurs when the state of notification changes, such as adding a notification key to the firebase database
     @Override
     public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
         if (!stateChanges.getFrom().isSubscribed() &&
