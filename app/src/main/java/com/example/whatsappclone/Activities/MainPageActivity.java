@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsappclone.Adapters.ChatListAdapter;
 import com.example.whatsappclone.Models.ChatModel;
+import com.example.whatsappclone.NotificationServices.SendNotification;
 import com.example.whatsappclone.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,15 +23,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.onesignal.OSDeviceState;
-import com.onesignal.OSNotificationReceivedEvent;
+import com.onesignal.OSSubscriptionObserver;
+import com.onesignal.OSSubscriptionStateChanges;
 import com.onesignal.OneSignal;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class MainPageActivity extends AppCompatActivity {
+public class MainPageActivity extends AppCompatActivity implements OSSubscriptionObserver {
 
     private RecyclerView mChatList;
     private RecyclerView.Adapter mChatListAdapter;
@@ -52,32 +55,10 @@ public class MainPageActivity extends AppCompatActivity {
         // OneSignal Initialization
         OneSignal.initWithContext(this);
         OneSignal.setAppId(ONESIGNAL_APP_ID);
-
-        OSDeviceState device = OneSignal.getDeviceState();
-
-        String notificationEmail;
-
-        {
-            assert device != null;
-            notificationEmail = device.getEmailAddress();
-        }
-
-        String notificationEmailId = device.getEmailUserId();
-        String notificationPushToken = device.getPushToken();
-        String notificationUserId = device.getUserId();
-
-        boolean notificationEnabled = device.areNotificationsEnabled();
-        boolean notificationSubscribed = device.isSubscribed();
-        boolean notificationPushDisabled = device.isPushDisabled();
+        OneSignal.addSubscriptionObserver(this);
 
 
-        OneSignal.setNotificationWillShowInForegroundHandler(new OneSignal.OSNotificationWillShowInForegroundHandler() {
-            @Override
-            public void notificationWillShowInForeground(OSNotificationReceivedEvent notificationReceivedEvent) {
-                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid())
-                        .child("notificationKey").setValue(notificationUserId);
-            }
-        });
+        new SendNotification("Yoooooo! Whats up?", "Message aaya hai be!", null);
 
         Fresco.initialize(this);
 
@@ -99,7 +80,6 @@ public class MainPageActivity extends AppCompatActivity {
             startActivity(intent);
 
             finish();
-            return;
         });
 
         initializeRecyclerView();
@@ -107,9 +87,24 @@ public class MainPageActivity extends AppCompatActivity {
         getUserChatList();
     }
 
+    @Override
+    public void onOSSubscriptionChanged(OSSubscriptionStateChanges stateChanges) {
+        if (!stateChanges.getFrom().isSubscribed() &&
+                stateChanges.getTo().isSubscribed()) {
+            FirebaseDatabase.getInstance().getReference().child("user").
+                    child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                    .child("notificationKey").setValue(Objects.requireNonNull(OneSignal.getDeviceState()).getUserId());
+
+            stateChanges.getTo().getUserId();
+        }
+
+        Log.i("Debug", "onOSPermissionChanged: " + stateChanges);
+    }
+
+
     private void getUserChatList() {
         DatabaseReference mUserChatDB = FirebaseDatabase.getInstance().getReference().
-                child(FirebaseAuth.getInstance().getUid())
+                child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
                 .child("chat");
 
         mUserChatDB.addValueEventListener(new ValueEventListener() { // value event listener checks for only the changes in the database
