@@ -104,9 +104,8 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
 
 
     private void getUserChatList() {
-        DatabaseReference mUserChatDB = FirebaseDatabase.getInstance().getReference().
-                child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
-                .child("chat");
+        DatabaseReference mUserChatDB = FirebaseDatabase.getInstance().getReference().child("user").
+                child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).child("chat");
 
         mUserChatDB.addValueEventListener(new ValueEventListener() { // value event listener checks for only the changes in the database
             @Override

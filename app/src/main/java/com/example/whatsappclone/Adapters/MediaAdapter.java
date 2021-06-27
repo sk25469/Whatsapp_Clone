@@ -28,10 +28,9 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.MediaViewHol
     }
 
     @NonNull
-    @NotNull
     @Override
     public MediaViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, null, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_media, null, false);
         return new MediaViewHolder(layoutView);
     }
 

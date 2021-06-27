@@ -3,6 +3,7 @@ package com.example.whatsappclone.Activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -16,7 +17,6 @@ import com.example.whatsappclone.Adapters.MediaAdapter;
 import com.example.whatsappclone.Adapters.MessageAdapter;
 import com.example.whatsappclone.Models.MessageModel;
 import com.example.whatsappclone.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -77,14 +78,14 @@ public class ChatActivity extends AppCompatActivity {
                     ArrayList<String> mediaUrlList = new ArrayList<>();
 
                     if (snapshot.child("text").getValue() != null)
-                        text = snapshot.child("text").getValue().toString();
+                        text = Objects.requireNonNull(snapshot.child("text").getValue()).toString();
 
                     if (snapshot.child("creator").getValue() != null)
-                        creatorID = snapshot.child("creator").getValue().toString();
+                        creatorID = Objects.requireNonNull(snapshot.child("creator").getValue()).toString();
 
                     if (snapshot.child("media").getChildrenCount() > 0)
                         for (DataSnapshot mediaSnapshot : snapshot.child("media").getChildren())
-                            mediaUrlList.add(mediaSnapshot.getValue().toString());
+                            mediaUrlList.add(Objects.requireNonNull(mediaSnapshot.getValue()).toString());
 
                     MessageModel mMessage = new MessageModel(snapshot.getKey(), creatorID, text, mediaUrlList);
                     messageList.add(mMessage);
@@ -120,10 +121,10 @@ public class ChatActivity extends AppCompatActivity {
     EditText mMessage;
 
     private void sendMessage() {
-        mMessage = findViewById(R.id.message);
+        mMessage = findViewById(R.id.messageInput);
 
         String messageId = mChatDb.push().getKey();
-        DatabaseReference newMessageDb = mChatDb.child(messageId);
+        final DatabaseReference newMessageDb = mChatDb.child(messageId);
 
         final Map newMessageMap = new HashMap();
         newMessageMap.put("creator", FirebaseAuth.getInstance().getUid());
@@ -134,30 +135,24 @@ public class ChatActivity extends AppCompatActivity {
         //newMessageDb.updateChildren(newMessageMap);
 
         if (!mediaUriList.isEmpty()) {
+            Log.i("Debug", "Media uri " + mediaIdList.size());
             for (String mediaUri : mediaUriList) {
-                String mediaId = newMessageDb.child("media").getKey();
+                String mediaId = newMessageDb.child("media").push().getKey();
                 mediaIdList.add(mediaId);
+                assert mediaId != null;
                 final StorageReference filePath = FirebaseStorage.getInstance().getReference().
                         child("chat").child(chatID).child(messageId).child(mediaId);
 
                 UploadTask uploadTask = filePath.putFile(Uri.parse(mediaUri));
 
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                newMessageMap.put("/media/" + mediaIdList.get(totalMediaUploaded) + "/", uri.toString());
-                                totalMediaUploaded++;
+                uploadTask.addOnSuccessListener(taskSnapshot -> filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                    newMessageMap.put("/media/" + mediaIdList.get(totalMediaUploaded) + "/", uri.toString());
+                    totalMediaUploaded++;
 
-                                if (totalMediaUploaded == mediaUriList.size())
-                                    updateDatabaseWithNewMessage(newMessageDb, newMessageMap);
+                    if (totalMediaUploaded == mediaUriList.size())
+                        updateDatabaseWithNewMessage(newMessageDb, newMessageMap);
 
-                            }
-                        });
-                    }
-                });
+                }));
 
             }
         } else {
