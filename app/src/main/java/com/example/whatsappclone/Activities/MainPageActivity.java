@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsappclone.Adapters.ChatListAdapter;
 import com.example.whatsappclone.Models.ChatModel;
 import com.example.whatsappclone.Models.UserModel;
+import com.example.whatsappclone.NotificationServices.SendNotification;
 import com.example.whatsappclone.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,7 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
+
         // Enable verbose OneSignal logging to debug issues if needed.
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
 
@@ -69,11 +71,10 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
 
             OneSignal.disablePush(true); // disables the one signal to push notification after we log out
             FirebaseAuth.getInstance().signOut();
-            // when user is signed out, he goes to the {@ MainActivity} */
+            /** when user is signed out, he goes to the {@ MainActivity} */
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            /* so that the user doesn't have access to
-             anything of this current activity */
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); /** so that the user doesn't have access to
+             anything of this current activity **/
             startActivity(intent);
 
             finish();
@@ -172,9 +173,9 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
                     mUser.setNotificationKey(snapshot.child("notificationKey").getValue().toString());
                 for(ChatModel mChat : chatList){
                     for (UserModel mUserIt : mChat.getUserModelArrayList()){
-                        if(mUserIt.getUid().equals(mUser.getUid()))
+                        if(mUserIt.getUid().equals(mUser.getUid())){
                             mUserIt.setNotificationKey(mUser.getNotificationKey());
-                        
+                        }
                     }
                 }
                 mChatListAdapter.notifyDataSetChanged();
@@ -195,7 +196,7 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
 
         RecyclerView mChatList = findViewById(R.id.chatList);
 
-        mChatList.setNestedScrollingEnabled(false); /* to make a seamless scrolling */
+        mChatList.setNestedScrollingEnabled(false); /* to make a seamless scrolling **/
 
         mChatList.setHasFixedSize(false);
 
@@ -209,7 +210,7 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
     }
 
     private void getPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { /* this permission is asked only if the android version > Marshmallow */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { /** this permission is asked only if the android version > Marshmallow **/
             requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS}, 1);
         }
     }
