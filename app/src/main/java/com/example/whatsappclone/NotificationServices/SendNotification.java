@@ -8,7 +8,7 @@ import org.json.JSONObject;
 public class SendNotification {
     public SendNotification(String message, String heading, String notificationKey) {
 
-        notificationKey = "6ed843b9-cd26-428a-bd28-8d7119ed9f23";
+        //notificationKey = "6ed843b9-cd26-428a-bd28-8d7119ed9f23";
         try {
             JSONObject notificationContent = new JSONObject(
                     "{'contents':{'en':'" + message + "'}," +

@@ -12,11 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.whatsappclone.Models.UserModel;
 import com.example.whatsappclone.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserListViewHolder> {
 
@@ -42,26 +45,38 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull UserListAdapter.UserListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull final UserListAdapter.UserListViewHolder holder, final int position) {
 
         holder.mUserName.setText(userList.get(position).getName());
 
         holder.mPhoneNumber.setText(userList.get(position).getPhone());
         holder.mLayout.setOnClickListener(v -> {
-            String key = FirebaseDatabase.getInstance().getReference().child("chat").push().getKey();
-            assert key != null;
-            FirebaseDatabase.getInstance().getReference().
-                    child("user").
-                    child(FirebaseAuth.getInstance().getUid()).
-                    child("chat").
-                    child(key).setValue(true); // this is for the person who is sending the message
-
-            FirebaseDatabase.getInstance().getReference().
-                    child("user").
-                    child(userList.get(position).getUid()).
-                    child("chat").
-                    child(key).setValue(true); // for the person whom we are sending the message from our contacts list
+            createChat(holder.getAdapterPosition());
         });
+    }
+
+    private void createChat(int position) {
+        String key = FirebaseDatabase.getInstance().getReference().child("chat").push().getKey();
+        assert key != null;
+        HashMap newChatMap = new HashMap();
+        newChatMap.put("id", key);
+        newChatMap.put("users/" + FirebaseAuth.getInstance().getUid(), true);
+        newChatMap.put("users/" + userList.get(position).getUid(), true);
+
+        DatabaseReference chatInfoDb = FirebaseDatabase.getInstance().getReference().child("chat").child(key).child("info");
+        chatInfoDb.updateChildren(newChatMap);
+
+
+        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().
+                child("user");
+
+        userDb.child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).
+                child("chat").
+                child(key).setValue(true); // this is for the person who is sending the message
+
+        userDb.child(userList.get(position).getUid()).
+                child("chat").
+                child(key).setValue(true); // for the person whom we are sending the message from our contacts list
     }
 
     @Override

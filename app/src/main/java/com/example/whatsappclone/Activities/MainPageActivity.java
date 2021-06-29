@@ -71,9 +71,9 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
 
             OneSignal.disablePush(true); // disables the one signal to push notification after we log out
             FirebaseAuth.getInstance().signOut();
-            /** when user is signed out, he goes to the {@ MainActivity} */
+            /* when user is signed out, he goes to the {@ MainActivity} */
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); /** so that the user doesn't have access to
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); /* so that the user doesn't have access to
              anything of this current activity **/
             startActivity(intent);
 
@@ -193,24 +193,17 @@ public class MainPageActivity extends AppCompatActivity implements OSSubscriptio
     private void initializeRecyclerView() {
 
         chatList = new ArrayList<>();
-
         RecyclerView mChatList = findViewById(R.id.chatList);
-
         mChatList.setNestedScrollingEnabled(false); /* to make a seamless scrolling **/
-
         mChatList.setHasFixedSize(false);
-
         RecyclerView.LayoutManager mChatListLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-
         mChatList.setLayoutManager(mChatListLayoutManager);
-
         mChatListAdapter = new ChatListAdapter(chatList);
-
         mChatList.setAdapter(mChatListAdapter);
     }
 
     private void getPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { /** this permission is asked only if the android version > Marshmallow **/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { /* this permission is asked only if the android version > Marshmallow */
             requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS}, 1);
         }
     }

@@ -1,6 +1,8 @@
 package com.example.whatsappclone.Models;
 
-public class UserModel {
+import java.io.Serializable;
+
+public class UserModel implements Serializable {
     private String name, phone, uid, notificationKey;
 
     public UserModel(String uid) {

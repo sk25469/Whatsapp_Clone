@@ -1,8 +1,9 @@
 package com.example.whatsappclone.Models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ChatModel {
+public class ChatModel implements Serializable {
     private String chatId;
 
     private ArrayList<UserModel> userModelArrayList = new ArrayList<>();
